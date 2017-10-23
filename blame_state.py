@@ -18,7 +18,15 @@ with open (tempfile, 'r') as f:
     s3_contents = json.load(f)
 
 os.remove(tempfile)
-last_to_touch = s3_contents['modules'][0]['resources']['data.aws_caller_identity.current']['primary']['attributes']['arn']
-
+counter = 0
+while True:
+    try:
+        last_to_touch = s3_contents['modules'][counter]['resources']['data.aws_caller_identity.current']['primary']['attributes']['arn']
+        break
+    except KeyError:
+        counter += 1
+    except IndexError:
+        print "ERROR: Not found"
+        break
 
 print "Last user to touch state: {}".format(last_to_touch.split('user/')[1])
